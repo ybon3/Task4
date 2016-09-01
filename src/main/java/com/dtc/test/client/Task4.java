@@ -1,73 +1,43 @@
 package com.dtc.test.client;
 
-import java.util.Date;
-
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.RepeatingCommand;
-import com.google.gwt.core.shared.GWT;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.DateField;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.container.Viewport;
 
 public class Task4 implements EntryPoint {
-	private static final RpcServiceAsync rpc = GWT.create(RpcService.class);
-
-	private DateField dateField = new DateField();
-	private TextButton button = new TextButton("送出");
-	private boolean rpcFinish = false;
-	private int counter = 0;
-	private DateTimeFormat format = DateTimeFormat.getFormat("HH:mm:ss");
 
 	@Override
 	public void onModuleLoad() {
-		button.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				start();
-			}
-		});
-		
-		VerticalLayoutContainer vc = new VerticalLayoutContainer();
-		vc.add(dateField);
-		vc.add(button);
+		HorizontalLayoutContainer hlcTop = new HorizontalLayoutContainer();
+		hlcTop.add(new TextButton("w:50%, h:50px"), new HorizontalLayoutData(0.5, 50));
+		hlcTop.add(new TextButton("w:50%, h:50px"), new HorizontalLayoutData(0.5, 50));
 
-		RootPanel.get().add(vc);
-	}
-	
-	private void start() {
-		GWT.log("開始啦開始啦～～～～");
-		counter = 0;
-		rpcFinish = false;
+		HorizontalLayoutContainer hlcBottomRightBottom = new HorizontalLayoutContainer();
+		hlcBottomRightBottom.add(new TextButton("w:200px"), new HorizontalLayoutData(200, 1.0));
+		hlcBottomRightBottom.add(new TextButton("?"), new HorizontalLayoutData(1.0, 1.0));
+		hlcBottomRightBottom.add(new TextButton("w:80px h:80px"), new HorizontalLayoutData(80, 80));
 		
-		//發 RPC
-		rpc.before(dateField.getValue(), new AsyncCallback<Boolean>() {
-			@Override
-			public void onSuccess(Boolean result) {
-				GWT.log(result + "你的時間比較" + (result ? "早" : "晚"));
-				rpcFinish = true;
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				GWT.log("出問題啦！訊息：" + caught.getMessage());
-				rpcFinish = true;
-			}
-		});
+		VerticalLayoutContainer vlcBottomRight = new VerticalLayoutContainer();
+		vlcBottomRight.add(new TextButton("h:20%(不含上頭的50px)"), new VerticalLayoutData(1.0, 0.2));
+		vlcBottomRight.add(hlcBottomRightBottom, new VerticalLayoutData(1.0, 0.8));
 		
-		//每隔 1 秒鐘寫一行 log 以顯示出 async 的行為
-		Scheduler.get().scheduleFixedPeriod(new RepeatingCommand() {
-			@Override
-			public boolean execute() {
-				counter++;
-				GWT.log("第 " + counter + " 次 @ " + format.format(new Date()));
-				return !rpcFinish;
-			}
-		}, 1000);		
+		HorizontalLayoutContainer hlcBottom = new HorizontalLayoutContainer();
+		hlcBottom.add(new TextButton("w:100px"), new HorizontalLayoutData(100, 1.0));
+		hlcBottom.add(vlcBottomRight, new HorizontalLayoutData(1.0, 1.0));
+		
+		VerticalLayoutContainer vlcMain = new VerticalLayoutContainer();
+		vlcMain.add(hlcTop, new VerticalLayoutData(1.0, 50));
+		vlcMain.add(hlcBottom, new VerticalLayoutData(1.0, 1.0));
+		
+	    Viewport vp = new Viewport();
+	    vp.add(vlcMain);
+
+	    RootPanel.get().add(vp);
+		
 	}
 }
